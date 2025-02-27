@@ -1,0 +1,33 @@
+conda create -n syri_env -c bioconda syri
+conda activate syri_env
+#/scratch/project/qaafi-cnafs/aamir.WRB.HASLR/software/envs/syri_env
+
+#conda create en 3.8
+#conda create -n py39 python=3.9 anaconda
+Activate
+conda activate py38
+Mamba install -c bioconda syri
+###for mac
+#conda activate py38
+
+#################
+ln -sf Ptom.fasta refgenome
+ln -sf Pper.fasta qrygenome
+
+# Whole genome alignment. Any other alignment can also be used.
+nucmer --maxmatch -c 100 -b 500 -l 50 refgenome qrygenome       
+
+# Remove small and lower quality alignments
+delta-filter -m -i 90 -l 100 out.delta > out.filtered.delta     
+# Convert alignment information to a .TSV format as 
+show-coords -THrd out.filtered.delta > out.filtered.coords     
+syri -c out.filtered.coords -d out.filtered.delta -r refgenome -q qrygenome --nosnp
+#plotsr syri.out refgenome qrygenome -H 8 -W 5 -o output.png
+
+plotsr --sr syri.out --genome genome.txt -H 3 -W 22
+
+###plotsr-color change need config cf file change copy from example folder###
+
+plotsr --sr syri.out --genome genome.txt -H 3 -W 22 --cfg base.cfg
+
+conda config --set solver classic
